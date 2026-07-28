@@ -30,8 +30,8 @@ function reservationArrival(reservation) { return reservation.arrival || reserva
 function cancellable(reservation) { const arrival=reservationArrival(reservation); return arrival && Date.now() < new Date(arrival).getTime() - 60 * 60 * 1000; }
 
 function currentUser() { return localStorage.getItem(USER_KEY) || ''; }
-function login(e) { e.preventDefault(); const name = document.getElementById('nickname').value.trim(); if (!name) return; localStorage.setItem(USER_KEY, name); updateUserName(); showToast(`${name}님, 환영합니다.`); }
-function logout() { localStorage.removeItem(USER_KEY); document.getElementById('nickname').value = ''; goHome(); showToast('로그아웃되었습니다.'); }
+function login(e) { e.preventDefault(); const name = document.getElementById('nickname').value.trim(); const password = document.getElementById('password').value; if (!name) return; if (password.length < 4) return showToast('비밀번호를 4자리 이상 입력해주세요.'); localStorage.setItem(USER_KEY, name); updateUserName(); showToast(`${name}님, 환영합니다.`); }
+function logout() { localStorage.removeItem(USER_KEY); document.getElementById('nickname').value = ''; document.getElementById('password').value = ''; goHome(); showToast('로그아웃되었습니다.'); }
 function updateUserName() { document.querySelectorAll('.user-name').forEach(el => el.textContent = currentUser()); }
 function startAs(role) { if (!currentUser()) { document.getElementById('nickname').focus(); return showToast('닉네임을 입력해 로그인해주세요.'); } document.getElementById('roleScreen').classList.add('hidden'); document.getElementById(role + 'Screen').classList.remove('hidden'); updateUserName(); renderAll(); }
 function goHome() { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); document.getElementById('roleScreen').classList.remove('hidden'); }
