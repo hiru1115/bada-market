@@ -39,6 +39,9 @@
             <div class="two-col"><input id="productName" placeholder="수산물명" required /><select id="productType"><option value="일반">일반 수산물</option><option value="못난이">못난이 수산물</option></select></div>
             <div class="two-col"><input id="productPrice" type="number" min="1" placeholder="가격 (원)" required /><input id="productQuantity" type="number" min="1" placeholder="수량 (개)" required /></div>
             <label>예상 입항시간<input id="arrivalTime" type="datetime-local" required /></label>
+            <input id="pickupLocation" placeholder="픽업 장소 (예: 해오름항 2번 부두)" required />
+            <label class="photo-label">수산물 사진 <small>선택 · 최대 500KB</small><input id="productPhoto" type="file" accept="image/*" onchange="previewPhoto(event)" /></label>
+            <img id="photoPreview" class="photo-preview hidden" alt="선택한 수산물 사진 미리보기" />
             <button id="productSubmit" class="primary" type="submit">판매 정보 등록하기</button>
           </form>
           <div id="fisherProducts" class="product-list"></div>
@@ -50,12 +53,12 @@
       <header class="topbar"><button class="back" onclick="goHome()">‹</button><div><p>시민·관광객 · <span class="user-name"></span>님</p><h2>오늘의 바다장터</h2></div><button class="logout" onclick="logout()">로그아웃</button></header>
       <div class="content">
         <section class="location-card"><span>⌖</span><div><strong>인근 항구 입항 정보</strong><small>GPS 위치는 시뮬레이션으로 표시됩니다</small></div><b>해오름항</b></section>
-        <section class="panel no-shadow"><div class="section-title"><div><p>입항 예정</p><h3>예약 가능한 수산물</h3></div><span id="productCount" class="count"></span></div><div id="citizenProducts" class="product-list"></div></section>
+        <section class="panel no-shadow"><div class="section-title"><div><p>입항 예정</p><h3>예약 가능한 수산물</h3></div><span id="productCount" class="count"></span></div><input id="productSearch" class="search" type="search" placeholder="수산물명 또는 어선명으로 검색" oninput="renderCitizen()" /><div id="citizenProducts" class="product-list"></div></section>
         <section class="panel reservations"><div class="section-title"><div><p>내 예약</p><h3>예약 내역</h3></div></div><div id="reservationList"></div></section>
       </div>
     </section>
   </main>
   <div id="toast" class="toast"></div>
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
