@@ -12,20 +12,39 @@
 <body>
   <main class="app-shell">
     <section id="roleScreen" class="role-screen">
-      <div class="hero-mark">⚓</div>
+      <div class="hero-mark">🐟</div>
       <p class="eyebrow">오늘 들어오는 신선한 바다</p>
       <h1>바다장터</h1>
-      <p class="hero-copy">입항 전 수산물 정보를 확인하고<br />쉽게 등록·예약하세요.</p>
-      <form class="login-box" onsubmit="login(event)">
-        <label for="nickname">닉네임으로 시작하기</label>
-        <div class="login-fields"><input id="nickname" maxlength="12" placeholder="닉네임 (예: 바다사랑)" autocomplete="nickname" required /><input id="password" type="password" minlength="4" placeholder="비밀번호 (4자리 이상)" autocomplete="current-password" required /><button class="primary" type="submit">로그인</button></div>
-        <small>시뮬레이션 로그인입니다. 비밀번호는 실제로 저장·인증되지 않습니다.</small>
-      </form>
-      <div class="role-cards">
-        <button class="role-card fisher" onclick="startAs('fisher')"><span>🧑‍✈️</span><strong>어민으로 시작하기</strong><small>어선·수산물 등록 및 입항 관리</small></button>
-        <button class="role-card citizen" onclick="startAs('citizen')"><span>🛍️</span><strong>시민·관광객으로 시작하기</strong><small>입항 예정 수산물 예약</small></button>
+      <p class="hero-copy">입항 전 수산물 정보를 확인하고<br />쉽게 등록·예약하세요</p>
+
+      <div class="login-box">
+        <div class="auth-tabs" role="tablist" aria-label="계정 메뉴">
+          <button id="loginTab" class="auth-tab active" type="button" onclick="setAuthMode('login')">로그인</button>
+          <button id="signupTab" class="auth-tab" type="button" onclick="setAuthMode('signup')">회원가입</button>
+        </div>
+        <form id="authForm" onsubmit="submitAuth(event)">
+          <div id="signupNickname" class="hidden">
+            <label for="nickname">닉네임</label>
+            <input id="nickname" maxlength="12" placeholder="표시할 닉네임 (예: 바다사랑)" autocomplete="nickname" />
+          </div>
+          <label for="email">이메일 계정</label>
+          <input id="email" type="email" placeholder="example@email.com" autocomplete="email" required />
+          <label for="password">비밀번호</label>
+          <input id="password" type="password" minlength="6" placeholder="6자리 이상 입력" autocomplete="current-password" required />
+          <div id="signupConfirm" class="hidden">
+            <label for="passwordConfirm">비밀번호 확인</label>
+            <input id="passwordConfirm" type="password" minlength="6" placeholder="비밀번호를 한 번 더 입력" autocomplete="new-password" />
+          </div>
+          <button id="authSubmit" class="primary auth-submit" type="submit">로그인</button>
+        </form>
+        <small id="authGuide">가입한 이메일과 비밀번호로 로그인하세요.</small>
       </div>
-      <p class="local-note">내 기기에만 저장되는 시뮬레이션 서비스입니다.</p>
+
+      <div class="role-cards">
+        <button class="role-card fisher" onclick="startAs('fisher')"><span>🛥️</span><strong>어민으로 시작하기</strong><small>어선·수산물 등록 및 입항 관리</small></button>
+        <button class="role-card citizen" onclick="startAs('citizen')"><span>🧺</span><strong>시민·관광객으로 시작하기</strong><small>입항 예정 수산물 예약</small></button>
+      </div>
+      <p class="local-note">회원가입 정보는 Firebase 인증으로 안전하게 관리됩니다.</p>
     </section>
 
     <section id="fisherScreen" class="screen hidden">
@@ -35,11 +54,11 @@
         <section class="panel">
           <div class="section-title"><div><p>판매 등록</p><h3>오늘의 수산물</h3></div><button class="primary small" onclick="toggleProductForm()">+ 수산물 등록</button></div>
           <form id="productForm" class="product-form hidden" onsubmit="addProduct(event)">
-            <input id="boatName" placeholder="어선명 (예: 새벽바다호)" required />
+            <input id="boatName" placeholder="어선명 (예: 은빛바다호)" required />
             <div class="two-col"><input id="productName" placeholder="수산물명" required /><select id="productType"><option value="일반">일반 수산물</option><option value="못난이">못난이 수산물</option></select></div>
             <div class="two-col"><input id="productPrice" type="number" min="1" placeholder="가격 (원)" required /><input id="productQuantity" type="number" min="1" placeholder="수량 (개)" required /></div>
             <label>예상 입항시간<input id="arrivalTime" type="datetime-local" required /></label>
-            <input id="pickupLocation" placeholder="픽업 장소 (예: 해오름항 2번 부두)" required />
+            <input id="pickupLocation" placeholder="픽업 장소 (예: 대아리항 2번 부두)" required />
             <label class="photo-label">수산물 사진 <small>선택 · 최대 500KB</small><input id="productPhoto" type="file" accept="image/*" onchange="previewPhoto(event)" /></label>
             <img id="photoPreview" class="photo-preview hidden" alt="선택한 수산물 사진 미리보기" />
             <button id="productSubmit" class="primary" type="submit">판매 정보 등록하기</button>
@@ -52,7 +71,7 @@
     <section id="citizenScreen" class="screen hidden">
       <header class="topbar"><button class="back" onclick="goHome()">‹</button><div><p>시민·관광객 · <span class="user-name"></span>님</p><h2>오늘의 바다장터</h2></div><button class="logout" onclick="logout()">로그아웃</button></header>
       <div class="content">
-        <section class="location-card"><span>⌖</span><div><strong>인근 항구 입항 정보</strong><small>GPS 위치는 시뮬레이션으로 표시됩니다</small></div><b>해오름항</b></section>
+        <section class="location-card"><span>⌖</span><div><strong>내 주변 입항 정보</strong><small>GPS 위치는 시뮬레이션으로 표시됩니다.</small></div><b>대아리항</b></section>
         <section class="panel no-shadow"><div class="section-title"><div><p>입항 예정</p><h3>예약 가능한 수산물</h3></div><span id="productCount" class="count"></span></div><input id="productSearch" class="search" type="search" placeholder="수산물명 또는 어선명으로 검색" oninput="renderCitizen()" /><div id="citizenProducts" class="product-list"></div></section>
         <section class="panel reservations"><div class="section-title"><div><p>내 예약</p><h3>예약 내역</h3></div></div><div id="reservationList"></div></section>
       </div>
