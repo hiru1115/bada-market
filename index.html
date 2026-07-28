@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>바다장터 | 입항 수산물 예약</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section id="roleScreen" class="role-screen">
+      <div class="hero-mark">⚓</div>
+      <p class="eyebrow">오늘 들어오는 신선한 바다</p>
+      <h1>바다장터</h1>
+      <p class="hero-copy">입항 전 수산물 정보를 확인하고<br />쉽게 등록·예약하세요.</p>
+      <form class="login-box" onsubmit="login(event)">
+        <label for="nickname">닉네임으로 시작하기</label>
+        <div><input id="nickname" maxlength="12" placeholder="예: 바다사랑" autocomplete="nickname" required /><button class="primary" type="submit">로그인</button></div>
+        <small>별도의 회원가입 없이 닉네임으로 이용합니다.</small>
+      </form>
+      <div class="role-cards">
+        <button class="role-card fisher" onclick="startAs('fisher')"><span>🧑‍✈️</span><strong>어민으로 시작하기</strong><small>어선·수산물 등록 및 입항 관리</small></button>
+        <button class="role-card citizen" onclick="startAs('citizen')"><span>🛍️</span><strong>시민·관광객으로 시작하기</strong><small>입항 예정 수산물 예약</small></button>
+      </div>
+      <p class="local-note">내 기기에만 저장되는 시뮬레이션 서비스입니다.</p>
+    </section>
+
+    <section id="fisherScreen" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="goHome()">‹</button><div><p>어민 관리 · <span class="user-name"></span>님</p><h2>입항 판매 현황</h2></div><button class="logout" onclick="logout()">로그아웃</button></header>
+      <div class="content">
+        <div class="summary-grid" id="fisherSummary"></div>
+        <section class="panel">
+          <div class="section-title"><div><p>판매 등록</p><h3>오늘의 수산물</h3></div><button class="primary small" onclick="toggleProductForm()">+ 수산물 등록</button></div>
+          <form id="productForm" class="product-form hidden" onsubmit="addProduct(event)">
+            <input id="boatName" placeholder="어선명 (예: 새벽바다호)" required />
+            <div class="two-col"><input id="productName" placeholder="수산물명" required /><select id="productType"><option value="일반">일반 수산물</option><option value="못난이">못난이 수산물</option></select></div>
+            <div class="two-col"><input id="productPrice" type="number" min="1" placeholder="가격 (원)" required /><input id="productQuantity" type="number" min="1" placeholder="수량 (개)" required /></div>
+            <label>예상 입항시간<input id="arrivalTime" type="datetime-local" required /></label>
+            <button id="productSubmit" class="primary" type="submit">판매 정보 등록하기</button>
+          </form>
+          <div id="fisherProducts" class="product-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="citizenScreen" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="goHome()">‹</button><div><p>시민·관광객 · <span class="user-name"></span>님</p><h2>오늘의 바다장터</h2></div><button class="logout" onclick="logout()">로그아웃</button></header>
+      <div class="content">
+        <section class="location-card"><span>⌖</span><div><strong>인근 항구 입항 정보</strong><small>GPS 위치는 시뮬레이션으로 표시됩니다</small></div><b>해오름항</b></section>
+        <section class="panel no-shadow"><div class="section-title"><div><p>입항 예정</p><h3>예약 가능한 수산물</h3></div><span id="productCount" class="count"></span></div><div id="citizenProducts" class="product-list"></div></section>
+        <section class="panel reservations"><div class="section-title"><div><p>내 예약</p><h3>예약 내역</h3></div></div><div id="reservationList"></div></section>
+      </div>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
