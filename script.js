@@ -22,6 +22,7 @@ const dateText = value => { const d = new Date(value); return `${d.getMonth() + 
 const escapeHtml = value => String(value || '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const currentName = () => signedInUser?.displayName || signedInUser?.email?.split('@')[0] || '';
 const currentId = () => signedInUser?.uid || '';
+const accountEmail = accountId => `${accountId.trim().toLowerCase()}@bada-market.local`;
 const mine = item => item.ownerId ? item.ownerId === currentId() : item.owner === currentName();
 const myReservation = item => item.userId ? item.userId === currentId() : item.user === currentName();
 const products = () => (marketState.products || []).filter(p => new Date(p.arrival).getTime() > Date.now());
@@ -44,7 +45,7 @@ function setAuthMode(mode) {
   $('passwordConfirm').required = signup;
   $('password').autocomplete = signup ? 'new-password' : 'current-password';
   $('authSubmit').textContent = signup ? '회원가입 완료' : '로그인';
-  $('authGuide').textContent = signup ? '이메일 계정과 비밀번호로 가입하면 다음부터 로그인할 수 있어요.' : '가입한 이메일과 비밀번호로 로그인하세요.';
+  $('authGuide').textContent = signup ? '아이디와 비밀번호로 가입하면 다음부터 로그인할 수 있어요.' : '가입한 아이디와 비밀번호로 로그인하세요.';
 }
 function togglePassword(inputId, button) {
   const input = $(inputId);
@@ -58,7 +59,8 @@ function authMessage(error) {
 }
 async function submitAuth(event) {
   event.preventDefault();
-  const email = $('email').value.trim(), password = $('password').value, button = $('authSubmit');
+  const accountId = $('accountId').value.trim(), password = $('password').value, button = $('authSubmit');
+  if (!/^[A-Za-z0-9_-]{3,20}$/.test(accountId)) return toast('아이디는 영문, 숫자, _, - 로 3자 이상 입력하세요.');
   if (authMode === 'signup') {
     const nickname = $('nickname').value.trim();
     if (!nickname) return toast('닉네임을 입력하세요.');
@@ -67,10 +69,10 @@ async function submitAuth(event) {
   button.disabled = true;
   try {
     if (authMode === 'signup') {
-      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      const credential = await createUserWithEmailAndPassword(auth, accountEmail(accountId), password);
       await updateProfile(credential.user, { displayName: $('nickname').value.trim() });
       toast('회원가입이 완료되었습니다.');
-    } else { await signInWithEmailAndPassword(auth, email, password); toast('로그인되었습니다.'); }
+    } else { await signInWithEmailAndPassword(auth, accountEmail(accountId), password); toast('로그인되었습니다.'); }
     $('authForm').reset();
   } catch (error) { toast(authMessage(error)); }
   finally { button.disabled = false; }
@@ -115,4 +117,4 @@ function submitReview(reservationId, rating) { const reservation = reservations(
 function cancelReservation(id) { const row=reservations().find(r=>r.id===id && myReservation(r)), arrival=row && arrivalOf(row); if (!row || !arrival || Date.now() >= new Date(arrival).getTime()-3600000) return toast('입항 1시간 전까지만 취소할 수 있습니다.'); const product=(marketState.products || []).find(p=>p.id===row.productId); if (product) product.reserved=Math.max(0,Number(product.reserved || 0)-Number(row.quantity)); marketState.reservations=reservations().filter(r=>r.id!==id); save(); renderAll(); toast('예약이 취소되었습니다.'); }
 function renderAll() { updateNames(); renderFisher(); renderCitizen(); }
 Object.assign(window,{setAuthMode,togglePassword,submitAuth,startAs,goHome,logout,previewPhoto,toggleProductForm,updatePriceLabel,addProduct,editProduct,updateStatus,reserveProduct,cancelReservation,submitReview,renderCitizen});
-document.addEventListener('DOMContentLoaded',()=>{ const date=new Date(Date.now()+3*3600000); if ($('arrivalTime')) $('arrivalTime').value=date.toISOString().slice(0,16); onAuthStateChanged(auth,user=>{ signedInUser=user; document.querySelector('.login-box').classList.toggle('hidden', !!user); renderAll(); }); getDoc(marketRef).then(snapshot=>{ if (!snapshot.exists()) return setDoc(marketRef,marketState); }).catch(()=>toast('Firebase 연결을 확인하세요.')); onSnapshot(marketRef,snapshot=>{ if(snapshot.exists()){ marketState=snapshot.data(); renderAll(); } }); });
+document.addEventListener('DOMContentLoaded',()=>{ const date=new Date(Date.now()+3*3600000); if ($('arrivalTime')) $('arrivalTime').value=date.toISOString().slice(0,16); onAuthStateChanged(auth,user=>{ signedInUser=user; document.querySelector('.login-box').classList.toggle('hidden', !!user); document.querySelector('.role-cards').classList.toggle('hidden', !user); renderAll(); }); getDoc(marketRef).then(snapshot=>{ if (!snapshot.exists()) return setDoc(marketRef,marketState); }).catch(()=>toast('Firebase 연결을 확인하세요.')); onSnapshot(marketRef,snapshot=>{ if(snapshot.exists()){ marketState=snapshot.data(); renderAll(); } }); });
