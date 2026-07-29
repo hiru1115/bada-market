@@ -65,6 +65,7 @@
             <div class="two-col"><input id="productPrice" type="number" min="1" placeholder="가격 (원)" required /><input id="productQuantity" type="number" min="1" placeholder="수량 (개)" required /></div>
             <label>예상 입항시간<input id="arrivalTime" type="datetime-local" required /></label>
             <input id="pickupLocation" placeholder="픽업 장소 (예: 대아리항 2번 부두)" required />
+            <textarea id="sellerMessage" rows="3" maxlength="120" placeholder="구매자에게 전하고 싶은 말 (선택)"></textarea>
             <label class="photo-label">수산물 사진 <small>선택 · 최대 500KB</small><input id="productPhoto" type="file" accept="image/*" onchange="previewPhoto(event)" /></label>
             <img id="photoPreview" class="photo-preview hidden" alt="선택한 수산물 사진 미리보기" />
             <button id="productSubmit" class="primary" type="submit">판매 정보 등록하기</button>
