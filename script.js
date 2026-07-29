@@ -82,7 +82,7 @@ function goHome() { document.querySelectorAll('.screen').forEach(el => el.classL
 function fileToDataUrl(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
 async function previewPhoto(event) { const file = event.target.files[0]; if (!file) return $('photoPreview').classList.add('hidden'); if (file.size > 500 * 1024) { event.target.value = ''; return toast('사진은 500KB 이하만 등록할 수 있습니다.'); } $('photoPreview').src = await fileToDataUrl(file); $('photoPreview').classList.remove('hidden'); }
 function toggleProductForm() { const form = $('productForm'); form.classList.toggle('hidden'); if (!form.dataset.editing) form.reset(); }
-function updatePriceLabel() { $('productPrice').placeholder = $('quantityUnit').value === 'kg' ? '가격 (원 / 0.1kg)' : '가격 (원 / 개)'; }
+function updatePriceLabel() { $('priceLabel').childNodes[0].textContent = $('quantityUnit').value === 'kg' ? '가격 (원 / 0.1kg)' : '가격 (원 / 개)'; }
 function card(product, fisher = false) {
   const left = remaining(product), percent = product.quantity ? Number(product.reserved || 0) / product.quantity * 100 : 0;
   const status = product.status || '입항 예정';
